@@ -654,6 +654,7 @@ int main(int argc, char** argv) {
         float* scores = (float*) larodOutput3Addr;
         float* numberofdetections = (float*) larodOutput4Addr;
         
+        gettimeofday(&startTs, NULL);
         if ((int) numberofdetections[0] == 0) {
            syslog(LOG_INFO,"No object is detected");
         }
@@ -691,7 +692,12 @@ int main(int argc, char** argv) {
                 }
             }
  
-        }          
+        }
+        gettimeofday(&endTs, NULL);
+
+        elapsedMs = (unsigned int) (((endTs.tv_sec - startTs.tv_sec) * 1000) +
+                                    ((endTs.tv_usec - startTs.tv_usec) / 1000));
+        syslog(LOG_INFO, "Ran Post-Processing(Cropping, saving jpg) for %u ms", elapsedMs);    
 
         // Release frame reference to provider.
         returnFrame(provider, buf);
